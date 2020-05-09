@@ -1,0 +1,3 @@
+﻿Much of the information provided in this repo is obtained from other sources, notably the [Intel Intrinsics Guide](https://software.intel.com/sites/landingpage/IntrinsicsGuide/) and [Intel ARK](https://ark.intel.com/content/www/us/en/ark/search/featurefilter.html?productType=873&1_Filter-InstructionSetExtensions=3533).
+
+To the extent unique information is presented here, it falls under the [Creative Commons Attribution license 4.0](https://creativecommons.org/licenses/by/4.0/).
