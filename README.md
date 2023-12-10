@@ -1,39 +1,44 @@
 ﻿## AVX-512 Instruction Groups and Programming Intrinsics
-While AVX-512 is most visibly an extension of AVX and AVX2 to a 512 bit width, AVX-512VL instructions are 128 or 256 bits wide. The VL subset comprises 27% of AVX-512 intrinsics and is often of greater interest than 512 bit operation. AMD Zen 4 processors implement AVX-512 at 256 bit width and Intel processors may not be faster at 512 bits than they are at 256 bits. AVX-512 and AVX-512VL's primary advantage over previous instruction sets (AVX, AVX2, and FMA) is arguably reduction in register spilling due to expansion from 16 ymm to 32 zmm registers and the addition of eight mask registers. The number of intrinsics triples to provide mask and maskz versions which make use of the mask registers. Of the 14 current instruction groups four are general (F, VL, DQ, BW) and 10 accelerate more specific workloads (BITALG, BF16, CD, FP16, IFMA52, VBMI, VBMI2, VNNI, VPINTERSECT, and VPOPCNT).
+While AVX-512 is most visibly an extension of AVX and AVX2 to a 512 bit width, AVX-512VL instructions are 128 or 256 bits wide. The VL subset comprises 27% of AVX-512 intrinsics and is often of greater interest than 512 bit operation. AMD Zen 4 processors implement AVX-512 at 256 bit width and Intel processors may not be faster at 512 bits than they are at 256 bits. AVX-512 and AVX-512VL's primary advantage over previous instruction sets (AVX, AVX2, and FMA) is arguably reduction in register spilling due to expansion from 16 ymm to 32 zmm registers and the addition of eight mask registers. The number of intrinsics triples to provide mask and maskz versions which make use of the mask registers. Of the 13 current instruction groups four are general (F, VL, DQ, BW) and 10 accelerate more specific workloads (BITALG, BF16, CD, FP16, IFMA52, VBMI, VBMI2, VNNI, and VPOPCNTDQ).
 
-| group   | what                          | instructions | intrinsics | Zen | Sunny Cove              | Skylake       | Knights | VL intrinsics |
-| ------- | ----------------------------- | ------------ | ---------- | --- | ----------------------- | ------------- | ------- | ------------- |
-| F       | foundation                    |  389         | 1435       | 4   | Rocket, Tiger, Ice Lake | X, Xeon 2017+ | all     |               |
-| VL      | 128 and 256 bit widths        |  223         | 1208       | 4   | Rocket, Tiger, Ice Lake | X, Xeon 2017+ |         | 1208          |
-| DQ      | doubleword and quadword       |   87         |  399       | 4   | Rocket, Tiger, Ice Lake | X, Xeon 2017+ |         |  176          |
-| BW      | byte and word                 |  150         |  764       | 4   | Rocket, Tiger, Ice Lake | X, Xeon 2017+ |         |  446          |
-| CD      | conflict detection            |    8         |   42       | 4   | Rocket, Tiger, Ice Lake | X, Xeon 2017+ | all     |   28          |
-| BITALG  | population count expansion    |    5         |   24       | 4   | Rocket, Tiger, Ice Lake |               |         |   16          |
-| IFMA52  | big integer FMA               |    3         |   18       | 4   | Rocket, Tiger, Ice Lake | (Cannon Lake) |         |   12          |
-| VBMI    | vector byte manipulation      |    8         |   30       | 4   | Rocket, Tiger, Ice Lake | (Cannon Lake) |         |   20          |
-| VBMI2   | vector byte manipulation      |   21         |  150       | 4   | Rocket, Tiger, Ice Lake |               |         |  100          |
-| VNNI    | vector neural network         |    5         |   36       | 4   | Rocket, Tiger, Ice Lake | Cascade Lake  |         |   24          |
-| VPOPCNT | population count              |    3         |   18       | 4   | Rocket, Tiger, Ice Lake |               | Mill    |   12          |
-| BF16    | half precision                |    5         |   27       | 4   |                         |               |         |   18          |
-| FP16    | half precision                |   96         |  938       |     |                         |               |         |  600          |
-| VP2INTERSECT | vector pair to mask pair |    2         |    6       |     |                         |               |         |    4          |
-| ER      | exponential and reciprocal    |   12         |   60       |     |                         |               | all     |               |
-| PF      | prefetch                      |    9         |   20       |     |                         |               | all     |               |
-| 4FMAPS  | single precision 4x1 FMA      |    4         |   12       |     |                         |               | Mill    |               |
-| 4NNIW   | vector neural network         |    2         |    6       |     |                         |               | Mill    |               |
-| total   |                               | 1031         | 5193       |     |                         |               |         | 2060          |
+| group     | what                        | AVX10 | instructions | intrinsics (VL) | Zen | Raptor, Golden Cove | Sunny Cove         | Skylake       | Knights |
+| --------- | --------------------------- | ----- | ------------ | --------------- | --- | ------------------- | ------------------ | ------------- | ------- |
+| F         | foundation                  | yes   |  389         | 1435            | 4   | Emerald, Sapphire   | Rocket, Tiger, Ice | X, Xeon 2017+ | all     |
+| VL        | 128 and 256 bit widths      | yes   |  223         | 1208 (1028)     | 4   | Emerald, Sapphire   | Rocket, Tiger, Ice | X, Xeon 2017+ |         |
+| DQ        | doubleword and quadword     | yes   |   87         |  399 (176)      | 4   | Emerald, Sapphire   | Rocket, Tiger, Ice | X, Xeon 2017+ |         |
+| BW        | byte and word               | yes   |  150         |  764 (446)      | 4   | Emerald, Sapphire   | Rocket, Tiger, Ice | X, Xeon 2017+ |         |
+| CD        | conflict detection          | yes   |    8         |   42 (28)       | 4   | Emerald, Sapphire   | Rocket, Tiger, Ice | X, Xeon 2017+ | all     |
+| BITALG    | population count expansion  | yes   |    5         |   24 (12)       | 4   | Emerald, Sapphire   | Rocket, Tiger, Ice |               |         |
+| IFMA52    | big integer FMA             | yes   |    3         |   18 (12)       | 4   | Emerald, Sapphire   | Rocket, Tiger, Ice | (Cannon Lake) |         |
+| VBMI      | vector byte manipulation    | yes   |    8         |   30 (20)       | 4   | Emerald, Sapphire   | Rocket, Tiger, Ice | (Cannon Lake) |         |
+| VBMI2     | vector byte manipulation    | yes   |   21         |  150 (100)      | 4   | Emerald, Sapphire   | Rocket, Tiger, Ice |               |         |
+| VNNI      | vector neural network       | yes   |    5         |   36 (24)       | 4   | Emerald, Sapphire   | Rocket, Tiger, Ice | Cascade Lake  |         |
+| VPOPCNTDQ | population count            | yes   |    3         |   18 (12)       | 4   | Emerald, Sapphire   | Rocket, Tiger, Ice |               | Mill    |
+| BF16      | half precision              | yes   |    5         |   27 (18)       | 4   | Emerald, Sapphire   |                    |               |         |
+| FP16      | half precision              | yes   |   96         |  938 (1600)     | 4   | Emerald, Sapphire   |                    |               |         |
+| VP2INTERSECT | vector pair to mask pair | no    |    2         |    6            |     |                     | Tiger              |               |         |
+| ER        | exponential and reciprocal  | no    |   12         |   60            |     |                     |                    |               | all     |
+| PF        | prefetch                    | no    |    9         |   20            |     |                     |                    |               | all     |
+| 4FMAPS    | single precision 4x1 FMA    | no    |    4         |   12            |     |                     |                    |               | Mill    |
+| 4NNIW     | vector neural network       | no    |    2         |    6            |     |                     |                    |               | Mill    |
+| total     |                             | no    | 1031         | 5193 (2060)     |     |                     |                    |               |         |
 
- AVX-512 was introduced by Intel in 2016 on Xeon Phi processors (Knights Landing and, later, Knights Corner). Beginning in Q3 2017, Intel Skylake X-series parts (i7 and i9) and Xeon processors enabled support 3959 of the 5139 AVX-512 intrinsics now defined by Intel. In Q3 2019, Ice Lake (Sunny Cove microarchitecture) expanded the set to 4130 intrinsics and the Golden Cove microarchitecture to 5095 intrinsics (announced Q4 2021 but supporting parts appear unlikely to ship until 2023). Xeon Phi's 4FMAPS, 4NNIW, and PF instruction groups have been superceded by more recent groups and architectural changes, thus appearing to be obsolete. ER instructions are valuable to some floating point but have not been reimplemented.
+ AVX-512 was introduced by Intel in 2016 on Xeon Phi processors (Knights Landing and, later, Knights Corner). Beginning in Q3 2017, Intel Skylake X-series parts (i7 and i9) and Xeon processors enabled support 3959 of the 5139 AVX-512 intrinsics now defined by Intel. In Q3 2019, Ice Lake (Sunny Cove microarchitecture) expanded the set to 4130 intrinsics and the Golden Cove microarchitecture to 5095 intrinsics (announced Q4 2021 but supporting parts appear unlikely to ship until 2023). Xeon Phi's 4FMAPS, 4NNIW, and PF instruction groups have been superceded by more recent groups and architectural changes, thus appearing to be obsolete. ER instructions are valuable to certain floating point calculations but have not been reimplemented.
 
-For AMD parts, the table above is based on Phoronix' [performance analysis](https://www.phoronix.com/review/amd-zen4-avx512) as AMD hasn't yet updated the [AMD64 Architecture Programmer's Manual](https://www.amd.com/system/files/TechDocs/40332.pdf) or [Revision Guide for AMD Family 19h Models](https://www.amd.com/system/files/TechDocs/56683-PUB-1.07.pdf).
+For AMD parts, the table above is based on Phoronix' [performance analysis](https://www.phoronix.com/review/amd-zen4-avx512) as AMD hasn't updated the [AMD64 Architecture Programmer's Manual](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/programmer-references/40332.pdf).
 
 For Intel parts, the table above derives from the [Intel Intrinsics Guide](https://software.intel.com/sites/landingpage/IntrinsicsGuide/), [Intel ARK](https://ark.intel.com/content/www/us/en/ark/search/featurefilter.html?productType=873&1_Filter-InstructionSetExtensions=3533), and [Intel 64 and IA-32 Architectures Software Developer's Manuals](https://software.intel.com/content/www/us/en/develop/articles/intel-sdm.html). It will therefore be inaccurate if Intel's information is inaccurate or if transcription errors were made. In particular, sections 15.2-4 of the architecture manual, volume 1, require software check for F before using other groups. However, the Intrinsics Guide does not indicate corresponding dependencies for many groups. The spreadsheet in this repo lists each group's instructions and intrinsics.
+
+## AVX10
+In July 2023, Intel announced AVX10. AVX10 formalizes consistent availability of 128, 256, and 512 bit instructions (AVX10/128, AVX10/256, and AVX10/512) across  AVX-512 subsets ([Intel 2023a](https://cdrdv2-public.intel.com/784343/356368-intel-avx10-tech-paper.pdf), [2023b](https://cdrdv2-public.intel.com/784267/355989-intel-avx10-spec.pdf)) and is expected launch as AVX10.1 in 2024 via Granite Rapids Xeons. As of late 2023 it appears most likely Xeon P-cores will support AVX10/512 while E-cores (and possibly desktop P-cores) will support AVX10/256. AVX10 appears to be backwards compatible with existing AVX-512 code and VL intrinsics at the given width.
 
 ## AVX-512 Availablity
 | release dates      | processor       | laptop, desktop | workstation, server               |
 | ------------------ | --------------- | --------------- | --------------------------------- |
-| Q1 2023?           | Sapphire Rapids |                 | repeatedly delayed                |
-| Q3 2022            | Zen 4           | 7000            |                                   |
+| Q4 2023            | Emerald Rapids  |                 |                                   |
+| Q2 to Q4 2023      | Zen 4           |                 | 7900, 8004, 9004, 97x4            |
+| Q1 2023            | Sapphire Rapids |                 | W, Bronze, Silver, Gold, Platinum |
+| Q3 2022 to Q4 2023 | Zen 4           | 7040, 7000      |                                   |
 | Q1 2021 to Q3 2021 | Rocket Lake     | i5, i7, i9      | E, W                              |
 | Q3 2020 to Q3 2021 | Tiger Lake      | i3, i5, i7, i9  | W                                 |
 | Q2 2020            | Cooper Lake     |                 | Gold, Platinum                    |
