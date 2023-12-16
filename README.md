@@ -35,7 +35,7 @@ In July 2023, Intel announced AVX10. AVX10 formalizes consistent availability of
 ## AVX-512 Availablity
 | release dates      | processor       | laptop, desktop | workstation, server               |
 | ------------------ | --------------- | --------------- | --------------------------------- |
-| Q4 2023            | Emerald Rapids  |                 |                                   |
+| Q4 2023            | Emerald Rapids  |                 | Silver, Gold, Platinum            |
 | Q2 to Q4 2023      | Zen 4           |                 | 7900, 8004, 9004, 97x4            |
 | Q1 2023            | Sapphire Rapids |                 | W, Bronze, Silver, Gold, Platinum |
 | Q3 2022 to Q4 2023 | Zen 4           | 7040, 7000      |                                   |
